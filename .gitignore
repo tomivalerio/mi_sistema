@@ -1,0 +1,18 @@
+# Entornos virtuales
+entorno/
+venv/
+
+# Archivos de configuración sensible
+.env
+*.pyc
+__pycache__/
+
+# Base de datos SQLite
+*.sqlite3
+
+# Archivos estáticos recolectados
+staticfiles/
+
+# Archivos de desarrollo
+.vscode/
+.idea/
