@@ -7,96 +7,9 @@
     <title>Movimientos de {{ cliente.nombre }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Estilos generales */
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        .navbar {
-            margin-bottom: 20px;
-        }
-
-        .container {
-            padding: 20px;
-        }
-
-        /* Estilos para la tabla */
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .table th,
-        .table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-
-        .table tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        /* Estilos para móviles */
-        @media (max-width: 768px) {
-            .table thead {
-                display: none; /* Oculta el encabezado en móviles */
-            }
-
-            .table tbody tr {
-                display: block;
-                margin-bottom: 10px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-            }
-
-            .table tbody td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px;
-                text-align: right;
-            }
-
-            .table tbody td::before {
-                content: attr(data-label);
-                font-weight: bold;
-                margin-right: 10px;
-                text-align: left;
-            }
-
-            .table tbody td .btn-group {
-                display: flex;
-                gap: 5px;
-            }
-
-            .table tbody td .btn-group .btn {
-                flex: 1;
-                min-width: 80px;
-            }
-        }
-
-        /* Estilos para el modal */
-        .modal-content {
-            border-radius: 10px;
-        }
-
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .modal-footer {
-            border-top: 1px solid #ddd;
+        /* Estilos personalizados */
+        .modal {
+            z-index: 1050; /* Asegúrate de que el modal esté por encima del fondo oscuro */
         }
     </style>
 </head>
@@ -122,16 +35,6 @@
     </nav>
 
     <div class="container mt-5">
-        <!-- Alertas para mensajes -->
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-        {% endif %}
-
         <h1>Movimientos de {{ cliente.nombre }}</h1>
         <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#agregarMovimientoModal">
             Agregar Movimiento
@@ -150,11 +53,11 @@
                 <tbody>
                     {% for movimiento in movimientos %}
                     <tr>
-                        <td data-label="Fecha">{{ movimiento.fecha }}</td>
-                        <td data-label="Descripción">{{ movimiento.descripcion }}</td>
-                        <td data-label="Monto">{{ movimiento.monto }}</td>
-                        <td data-label="Estado">{% if movimiento.estado %}Pagado{% else %}No pagado{% endif %}</td>
-                        <td data-label="Acciones">
+                        <td>{{ movimiento.fecha }}</td>
+                        <td>{{ movimiento.descripcion }}</td>
+                        <td>{{ movimiento.monto }}</td>
+                        <td>{% if movimiento.estado %}Pagado{% else %}No pagado{% endif %}</td>
+                        <td>
                             <div class="btn-group">
                                 <a href="#" class="btn btn-sm btn-warning" data-bs-toggle="modal"
                                     data-bs-target="#editarMovimientoModal{{ movimiento.id }}">Editar</a>
@@ -163,81 +66,6 @@
                             </div>
                         </td>
                     </tr>
-
-                    <!-- Modal para Editar Movimiento -->
-                    <div class="modal fade" id="editarMovimientoModal{{ movimiento.id }}" tabindex="-1"
-                        aria-labelledby="editarMovimientoModalLabel{{ movimiento.id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editarMovimientoModalLabel{{ movimiento.id }}">Editar
-                                        Movimiento</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form method="post" action="{% url 'editar_movimiento' movimiento.id %}">
-                                        {% csrf_token %}
-                                        <div class="form-group mb-3">
-                                            <label for="fecha">Fecha</label>
-                                            <input type="date" class="form-control" id="fecha" name="fecha"
-                                                value="{{ movimiento.fecha|date:'Y-m-d' }}" required>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label for="descripcion">Descripción</label>
-                                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
-                                                required>{{ movimiento.descripcion }}</textarea>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label for="monto">Monto</label>
-                                            <input type="number" class="form-control" id="monto" name="monto"
-                                                value="{{ movimiento.monto }}" step="0.01" required>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label for="estado">Estado de Pago</label>
-                                            <select class="form-control" id="estado" name="estado">
-                                                <option value="False" {% if not movimiento.estado %}selected{% endif %}>
-                                                    No pagado</option>
-                                                <option value="True" {% if movimiento.estado %}selected{% endif %}>Pagado
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Modal para Eliminar Movimiento -->
-                    <div class="modal fade" id="eliminarMovimientoModal{{ movimiento.id }}" tabindex="-1"
-                        aria-labelledby="eliminarMovimientoModalLabel{{ movimiento.id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="eliminarMovimientoModalLabel{{ movimiento.id }}">Eliminar
-                                        Movimiento</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    ¿Estás seguro de que deseas eliminar este movimiento?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Cancelar</button>
-                                    <form method="post" action="{% url 'eliminar_movimiento' movimiento.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     {% endfor %}
                 </tbody>
             </table>
@@ -256,20 +84,19 @@
                 <div class="modal-body">
                     <form method="post" action="{% url 'agregar_movimiento' cliente.id %}">
                         {% csrf_token %}
-                        <div class="form-group mb-3">
+                        <div class="mb-3">
                             <label for="fecha">Fecha</label>
                             <input type="date" class="form-control" id="fecha" name="fecha" required>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3">
                             <label for="descripcion">Descripción</label>
-                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
-                                required></textarea>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3">
                             <label for="monto">Monto</label>
                             <input type="number" class="form-control" id="monto" name="monto" step="0.01" required>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3">
                             <label for="estado">Estado de Pago</label>
                             <select class="form-control" id="estado" name="estado">
                                 <option value="False">No pagado</option>
