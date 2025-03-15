@@ -18,6 +18,16 @@
             flex: 1;
             min-width: 100px;
         }
+        /* Ajustes para la tabla en móviles */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            border-radius: 0.2rem;
+        }
     </style>
 </head>
 <body>
@@ -55,93 +65,95 @@
         <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#agregarMovimientoModal">
             Agregar Movimiento
         </button>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Descripción</th>
-                    <th>Monto</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for movimiento in movimientos %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <td>{{ movimiento.fecha }}</td>
-                        <td>{{ movimiento.descripcion }}</td>
-                        <td>{{ movimiento.monto }}</td>
-                        <td>{% if movimiento.estado %}Pagado{% else %}No pagado{% endif %}</td>
-                        <td>
-                            <a href="#" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editarMovimientoModal{{ movimiento.id }}">Editar</a>
-                            <a href="#" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#eliminarMovimientoModal{{ movimiento.id }}">Eliminar</a>
-                        </td>
+                        <th>Fecha</th>
+                        <th>Descripción</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
+                </thead>
+                <tbody>
+                    {% for movimiento in movimientos %}
+                        <tr>
+                            <td>{{ movimiento.fecha }}</td>
+                            <td>{{ movimiento.descripcion }}</td>
+                            <td>{{ movimiento.monto }}</td>
+                            <td>{% if movimiento.estado %}Pagado{% else %}No pagado{% endif %}</td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editarMovimientoModal{{ movimiento.id }}">Editar</a>
+                                <a href="#" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#eliminarMovimientoModal{{ movimiento.id }}">Eliminar</a>
+                            </td>
+                        </tr>
 
-                    <!-- Modal para Editar Movimiento -->
-                    <div class="modal fade" id="editarMovimientoModal{{ movimiento.id }}" tabindex="-1" aria-labelledby="editarMovimientoModalLabel{{ movimiento.id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editarMovimientoModalLabel{{ movimiento.id }}">Editar Movimiento</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form method="post" action="{% url 'editar_movimiento' movimiento.id %}">
-                                        {% csrf_token %}
-                                        <div class="form-group mb-3">
-                                            <label for="fecha">Fecha</label>
-                                            <input type="date" class="form-control" id="fecha" name="fecha" value="{{ movimiento.fecha|date:'Y-m-d' }}" required>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label for="descripcion">Descripción</label>
-                                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required>{{ movimiento.descripcion }}</textarea>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label for="monto">Monto</label>
-                                            <input type="number" class="form-control" id="monto" name="monto" value="{{ movimiento.monto }}" step="0.01" required>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label for="estado">Estado de Pago</label>
-                                            <select class="form-control" id="estado" name="estado">
-                                                <option value="False" {% if not movimiento.estado %}selected{% endif %}>No pagado</option>
-                                                <option value="True" {% if movimiento.estado %}selected{% endif %}>Pagado</option>
-                                            </select>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                        </div>
-                                    </form>
+                        <!-- Modal para Editar Movimiento -->
+                        <div class="modal fade" id="editarMovimientoModal{{ movimiento.id }}" tabindex="-1" aria-labelledby="editarMovimientoModalLabel{{ movimiento.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editarMovimientoModalLabel{{ movimiento.id }}">Editar Movimiento</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="post" action="{% url 'editar_movimiento' movimiento.id %}">
+                                            {% csrf_token %}
+                                            <div class="form-group mb-3">
+                                                <label for="fecha">Fecha</label>
+                                                <input type="date" class="form-control" id="fecha" name="fecha" value="{{ movimiento.fecha|date:'Y-m-d' }}" required>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="descripcion">Descripción</label>
+                                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required>{{ movimiento.descripcion }}</textarea>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="monto">Monto</label>
+                                                <input type="number" class="form-control" id="monto" name="monto" value="{{ movimiento.monto }}" step="0.01" required>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="estado">Estado de Pago</label>
+                                                <select class="form-control" id="estado" name="estado">
+                                                    <option value="False" {% if not movimiento.estado %}selected{% endif %}>No pagado</option>
+                                                    <option value="True" {% if movimiento.estado %}selected{% endif %}>Pagado</option>
+                                                </select>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Modal para Eliminar Movimiento -->
-                    <div class="modal fade" id="eliminarMovimientoModal{{ movimiento.id }}" tabindex="-1" aria-labelledby="eliminarMovimientoModalLabel{{ movimiento.id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="eliminarMovimientoModalLabel{{ movimiento.id }}">Eliminar Movimiento</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    ¿Estás seguro de que deseas eliminar este movimiento?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <form method="post" action="{% url 'eliminar_movimiento' movimiento.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                                    </form>
+                        <!-- Modal para Eliminar Movimiento -->
+                        <div class="modal fade" id="eliminarMovimientoModal{{ movimiento.id }}" tabindex="-1" aria-labelledby="eliminarMovimientoModalLabel{{ movimiento.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="eliminarMovimientoModalLabel{{ movimiento.id }}">Eliminar Movimiento</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ¿Estás seguro de que deseas eliminar este movimiento?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <form method="post" action="{% url 'eliminar_movimiento' movimiento.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </tbody>
-        </table>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Modal para Agregar Movimiento -->
